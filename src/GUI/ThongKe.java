@@ -36,7 +36,7 @@ public class ThongKe extends JFrame {
 	private Container pane;
 	private JFreeChart pieChart;
 
-	public ThongKe() {
+	public ThongKe(String dateFrom, String dateTo) {
 		setSize(830, 590);
 		getContentPane().setBackground(Color.LIGHT_GRAY);
 
@@ -60,6 +60,26 @@ public class ThongKe extends JFrame {
 		lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		panel.add(lblNewLabel);
 
+		JLabel lblNewLabel_1 = new JLabel("Tổng Doanh Thu:");
+		lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		lblNewLabel_1.setBounds(27, 120, 227, 14);
+		getContentPane().add(lblNewLabel_1);
+
+		JLabel lblNewLabel_1_1 = new JLabel("Tổng Khách Hàng:");
+		lblNewLabel_1_1.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		lblNewLabel_1_1.setBounds(27, 160, 227, 14);
+		getContentPane().add(lblNewLabel_1_1);
+
+		JLabel lblNewLabel_1_1_1 = new JLabel("Tổng Hoá Đơn:");
+		lblNewLabel_1_1_1.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		lblNewLabel_1_1_1.setBounds(27, 200, 227, 14);
+		getContentPane().add(lblNewLabel_1_1_1);
+
+		JLabel lblNewLabel_1_1_2 = new JLabel("Tổng Tiền Dịch Vụ:");
+		lblNewLabel_1_1_2.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		lblNewLabel_1_1_2.setBounds(27, 240, 227, 14);
+		getContentPane().add(lblNewLabel_1_1_2);
+
 		JLabel fromDate = new JLabel("Từ ngày:");
 		fromDate.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		fromDate.setBounds(27, 80, 227, 14);
@@ -68,6 +88,8 @@ public class ThongKe extends JFrame {
 		JTextField txtFromDate = new JTextField(20);
 		txtFromDate.setBounds(120, 80, 150, 20);
 		getContentPane().add(txtFromDate);
+		txtFromDate.setText(dateFrom);
+		txtFromDate.setEditable(false);
 		txtFromDate.setColumns(10);
 
 		JLabel toDate = new JLabel("Đến ngày:");
@@ -78,78 +100,34 @@ public class ThongKe extends JFrame {
 		JTextField txtToDate = new JTextField(20);
 		txtToDate.setBounds(400, 80, 150, 20);
 		getContentPane().add(txtToDate);
+		txtToDate.setText(dateTo);
+		txtToDate.setEditable(false);
 		txtToDate.setColumns(10);
 
-		JButton btnThongKe = new JButton("Thống kê");
-		btnThongKe.setBounds(580, 80, 120, 20);
-		getContentPane().add(btnThongKe);
-
-		JLabel lblNewLabel_1 = new JLabel("Tổng Doanh Thu:");
-		lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		lblNewLabel_1.setBounds(27, 160, 227, 14);
-		getContentPane().add(lblNewLabel_1);
-
-		JLabel lblNewLabel_1_1 = new JLabel("Tổng Khách Hàng:");
-		lblNewLabel_1_1.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		lblNewLabel_1_1.setBounds(27, 200, 227, 14);
-		getContentPane().add(lblNewLabel_1_1);
-
-		JLabel lblNewLabel_1_1_1 = new JLabel("Tổng Hoá Đơn:");
-		lblNewLabel_1_1_1.setFont(new Font("Times New Roman", Font.BOLD, 20));
-		lblNewLabel_1_1_1.setBounds(27, 240, 227, 14);
-		getContentPane().add(lblNewLabel_1_1_1);
-
 		txt_TongDoanhThu = new JTextField();
-		txt_TongDoanhThu.setBounds(205, 160, 542, 20);
+		txt_TongDoanhThu.setBounds(205, 120, 542, 20);
 		getContentPane().add(txt_TongDoanhThu);
 		txt_TongDoanhThu.setColumns(10);
 
 		txt_TongKhachHang = new JTextField();
-		txt_TongKhachHang.setBounds(205, 200, 542, 20);
+		txt_TongKhachHang.setBounds(205, 160, 542, 20);
 		getContentPane().add(txt_TongKhachHang);
 		txt_TongKhachHang.setColumns(10);
 
 		txt_TongHoaDon = new JTextField();
-		txt_TongHoaDon.setBounds(205, 240, 542, 20);
+		txt_TongHoaDon.setBounds(205, 200, 542, 20);
 		getContentPane().add(txt_TongHoaDon);
 		txt_TongHoaDon.setColumns(10);
 
-		pieChart = ChartFactory.createPieChart("", null);
+		txt_TongDichVu = new JTextField();
+		txt_TongDichVu.setBounds(205, 240, 542, 20);
+		getContentPane().add(txt_TongDichVu);
+		txt_TongDichVu.setColumns(10);
+
+		pieChart = ChartFactory.createPieChart("", createDataset(dateFrom, dateTo), true, true, false);
 		ChartPanel chartPanel = new ChartPanel(pieChart);
 		chartPanel.setBounds(120, 300, 600, 220);
 		pane.add(chartPanel);
-
-		chartPanel.setVisible(false);
-
-		btnThongKe.addActionListener(e -> {
-			String from = txtFromDate.getText();
-			String to = txtToDate.getText();
-
-			if (from.isEmpty() || to.isEmpty()) {
-				JOptionPane.showMessageDialog(null, "Vui lòng nhập đủ thông tin");
-			} else {
-				try {
-					List<ChiTietThuePhongDto> dsData = chiTietThuePhongDao.getDataByTimeFrame(from, to);
-					float tongTien = 0;
-					int tongKhachHang = chiTietThuePhongDao.getTotalCustomer();
-					int tongHoaDon = dsData.size();
-					for (int i = 0; i < dsData.size(); i++) {
-						tongTien = tongTien + dsData.get(i).getTongTien();
-					}
-
-					txt_TongDoanhThu.setText(String.valueOf(tongTien));
-					txt_TongHoaDon.setText(String.valueOf(tongHoaDon));
-					txt_TongKhachHang.setText(String.valueOf(tongKhachHang));
-					pieChart = ChartFactory.createPieChart("", createDataset(from, to), true, true, false);
-
-					chartPanel.setVisible(true);
-
-				} catch (Exception e2) {
-					e2.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Định dạng ngày tháng theo YYYY-MM-DD");
-				}
-			}
-		});
 
 	}
 
@@ -159,10 +137,18 @@ public class ThongKe extends JFrame {
 		List<ChiTietThuePhongDto> dsData = chiTietThuePhongDao.getDataByTimeFrame(from, to);
 		float tongTien = 0;
 		float tienDichVu = 0;
+		int tongDon = 0;
+		int tongKhach = chiTietThuePhongDao.getTotalCustomer();
 		for (int i = 0; i < dsData.size(); i++) {
 			tongTien = tongTien + dsData.get(i).getTongTien() - dsData.get(i).getTienDichVu();
 			tienDichVu = tienDichVu + dsData.get(i).getTienDichVu();
+			tongDon += 1;
 		}
+
+		txt_TongDoanhThu.setText(String.valueOf(tongTien));
+		txt_TongDichVu.setText(String.valueOf(tienDichVu));
+		txt_TongKhachHang.setText(String.valueOf(tongKhach));
+		txt_TongHoaDon.setText(String.valueOf(tongDon));
 
 		DefaultPieDataset dataset = new DefaultPieDataset();
 		dataset.setValue("Tiền phòng", tongTien);
@@ -171,8 +157,4 @@ public class ThongKe extends JFrame {
 		return dataset;
 	}
 
-	public static void main(String[] args) {
-		ThongKe frm = new ThongKe();
-		frm.setVisible(true);
-	}
 }

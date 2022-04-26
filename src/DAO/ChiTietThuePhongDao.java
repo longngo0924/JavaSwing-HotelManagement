@@ -14,6 +14,7 @@ public class ChiTietThuePhongDao {
 		List<ChiTietThuePhongDto> dataList = new ArrayList<>();
 		try {
 			String query = "select * from ChiTietThuePhong where ngayDen >= '" + from + "' and ngayDen <= '" + to + "'";
+			System.out.println(query);
 			ResultSet result = connection.Getdata(query);
 			while (result.next()) {
 				ChiTietThuePhongDto dto = new ChiTietThuePhongDto(result.getString(6), result.getString(1),
