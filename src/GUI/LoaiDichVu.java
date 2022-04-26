@@ -186,8 +186,12 @@ public class LoaiDichVu extends JFrame implements MouseInputListener {
 		txtTenLoai.setText("");
 	}
 
+	@SuppressWarnings("static-access")
 	private String generateId() {
-		return "LDV" + (model.getRowCount() + 1);
+		List<LoaiDichVuDto> ds = loaiDichVuDao.layDSLoaiDichVu();
+		int total = ds.size() - 1;
+		int index = Integer.parseInt(ds.get(total).getMaLoai().substring(3)) + 1;
+		return "LDV" + index;
 	}
 
 	public static void main(String[] args) {
